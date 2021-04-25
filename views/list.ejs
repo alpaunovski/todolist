@@ -8,19 +8,28 @@
 </head>
 
 <body>
-    <h1>It's a
-        <%= kindOfDay %>! </h1>
+    <div class="box" id="heading">
+        <h1>It's a
+            <%= kindOfDay %>! </h1>
+    </div>
 
-    <ul>
+    <div class="box">
         <% for (let i=0; i < newListItems.length; i++) { %>
-            <li>
-                <%= newListItems[i] %>
-            </li>
+            <div class="item">
+                <input type="checkbox">
+                <p>
+                    <%= newListItems[i] %>
+                </p>
+            </div>
             <% } %>
-    </ul>
-    <form action="/" method="post">
-        <input type="text" name="newItem" placeholder="Enter your task">
-        <button type="submit">Add your task</button></form>
+
+                <form class="item" action="/" method="post">
+                    <input type="text" name="newItem" placeholder="Enter your task" autocomplete="off">
+                    <button type="submit">+</button></form>
+    </div>
+
+
+
 </body>
 
 </html>
