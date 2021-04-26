@@ -4,6 +4,8 @@ const app = express();
 
 const bodyParser = require("body-parser");
 const https = require("https");
+const date = require(__dirname + "/date.js");
+
 app.use(express.static("public"));
 var items = ["Buy Food", "Cook Food", "Eat Food"];
 let workItems = [];
@@ -16,11 +18,8 @@ app.set('view engine', 'ejs');
 
 
 app.get("/", function(req, res) {
-    var today = new Date();
 
-    var options = { weekday: "long", day: "numeric", month: "long" };
-    var day = today.toLocaleDateString("en-US", options);
-
+    let day = date();
     var lastItem = items[items.length - 1];
     res.render("list", { listTitle: day, newListItems: items });
 
