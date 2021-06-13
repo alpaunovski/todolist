@@ -6,13 +6,15 @@
     </div>
 
     <div class="box">
-        <% newListItems.forEach(element => { %>
-            <div class="item">
-                <input type="checkbox">
-                <p>
-                    <%= element.name %>
-                </p>
-            </div>
+        <% newListItems.forEach(item => { %>
+            <form action="/delete" method="POST">
+                <div class="item">
+                    <input type="checkbox" name="checkbox" value="<%= item._id%>" onchange="this.form.submit()">
+                    <p>
+                        <%= item.name %>
+                    </p>
+                </div>
+            </form>
             <% } )%>
 
                 <form class="item" action="/" method="post">
