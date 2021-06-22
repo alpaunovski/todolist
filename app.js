@@ -30,6 +30,14 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
+const listSchema = {
+    name: String,
+    items: [itemsSchema]
+}
+
+const List = mongoose.model("List", listSchema);
+
+
 
 var items = [];
 
@@ -109,6 +117,23 @@ app.post("/work", function(req, res) {
 app.get("/about", function(req, res) {
     res.render("about");
 });
+
+app.get("/:customListName", function(req, res) {
+    const customListName = req.params.customListName;
+    const list = new List({
+        name: customListName,
+        items: defaultItems
+    });
+
+    list.save();
+
+    List.findOne({ name: customListName }, function(err, foundList) {
+        if (!err) {
+            if (customListName === foundList.name) { console.log(customListName + " exists"); }
+        }
+
+    });
+})
 app.listen(3000, function() {
     console.log("Server started on port 3000");
 });
