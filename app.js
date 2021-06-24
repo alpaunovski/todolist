@@ -83,57 +83,86 @@ app.get("/", function(req, res) {
 
 app.post("/", function(req, res) {
     const itemName = req.body.newItem;
+    const listName = req.body.list;
 
     const item = new Item({ name: itemName });
 
-    item.save();
-    res.redirect("/");
+    if (listName === "Today") {
+        item.save();
+        res.redirect("/");
+    } else {
+        List.findOne({ name: listName }, function(err, foundList) {
+            foundList.items.push(item);
+            foundList.save();
+            res.redirect("/" + listName);
+
+        });
+
+    }
 });
 
 app.post("/delete", function(req, res) {
 
-    const checkedItemId = req.body.checkbox;
+            const checkedItemId = req.body.checkbox;
+            const listName = req.body.listName;
 
-    Item.findByIdAndRemove(checkedItemId, function(err) {
-        if (err) {
-            console.log(err);
-        }
-    })
-    res.redirect("/");
+            if (listName === "Today") {
+                Item.findByIdAndRemove(checkedItemId, function(err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+                res.redirect("/");
+            } else {
+                List.findOneAndUpdate({ name: listName }, { $pull: { items: { _id: checkedItemId } } }, function(err, foundList);
+                    if (!err) {
+                        res.redirect("");
+                    }
+                }
 
-});
 
-app.get("/work", function(req, res) {
-    res.render("list", { listTitle: "Work List", newListItems: workItems });
-});
+            });
 
-app.post("/work", function(req, res) {
-    let item = req.body.newItem;
+        app.get("/work", function(req, res) {
+            res.render("list", { listTitle: "Work List", newListItems: workItems });
+        });
 
-    workItems.push(item);
-    res.redirect("/work");
-});
+        app.post("/work", function(req, res) {
+            let item = req.body.newItem;
 
-app.get("/about", function(req, res) {
-    res.render("about");
-});
+            workItems.push(item);
+            res.redirect("/work");
+        });
 
-app.get("/:customListName", function(req, res) {
-    const customListName = req.params.customListName;
-    const list = new List({
-        name: customListName,
-        items: defaultItems
-    });
+        app.get("/about", function(req, res) {
+            res.render("about");
+        });
 
-    list.save();
+        app.get("/:customListName", function(req, res) {
+            const customListName = req.params.customListName;
 
-    List.findOne({ name: customListName }, function(err, foundList) {
-        if (!err) {
-            if (customListName === foundList.name) { console.log(customListName + " exists"); }
-        }
 
-    });
-})
-app.listen(3000, function() {
-    console.log("Server started on port 3000");
-});
+            List.findOne({ name: customListName }, function(err, foundList) {
+                if (!err) {
+                    if (!foundList) {
+                        // console.log("Doesn't exist");
+                        const list = new List({
+                            name: customListName,
+                            items: defaultItems
+                        });
+
+                        list.save();
+                        res.redirect("/" + customListName);
+                    } else {
+                        // console.log(customListName + " exists");
+
+                        res.render("list", { listTitle: foundList.name, newListItems: foundList.items });
+
+                    }
+                }
+
+            });
+
+        }); app.listen(3000, function() {
+            console.log("Server started on port 3000");
+        })
